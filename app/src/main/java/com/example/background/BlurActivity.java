@@ -146,6 +146,7 @@ public class BlurActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.go_button:
                 mViewModel.applyBlur(getBlurLevel());
+                break;
             case R.id.see_file_button:
                 Uri currentUri = mViewModel.getOutputUri();
                 if (currentUri != null ) {
@@ -154,9 +155,9 @@ public class BlurActivity extends AppCompatActivity implements View.OnClickListe
                         startActivity(actionView);
                     }
                 }
+                break;
             case R.id.cancel_button:
                 mViewModel.cancelWork();
-            default:
                 break;
         }
     }
