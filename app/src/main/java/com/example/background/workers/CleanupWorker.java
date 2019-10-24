@@ -44,10 +44,11 @@ public class CleanupWorker extends Worker {
                     }
                 }
             }
+
+            return Result.success();
         } catch (Exception e) {
             Log.e(TAG, "Error cleaning up", e);
             return Result.failure();
         }
-        return null;
     }
 }

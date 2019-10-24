@@ -34,7 +34,6 @@ public class BlurWorker extends Worker {
         String resourceUri = getInputData().getString(Constants.KEY_IMAGE_URI);
 
         try {
-//            Bitmap picture = BitmapFactory.decodeResource(applicationContext.getResources(), R.drawable.test);
 
             if (TextUtils.isEmpty(resourceUri)) {
                 Log.e(TAG, "Invalid input uri");
