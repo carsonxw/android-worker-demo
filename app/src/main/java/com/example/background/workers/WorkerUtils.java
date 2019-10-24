@@ -68,6 +68,9 @@ final class WorkerUtils {
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel =
                     new NotificationChannel(Constants.CHANNEL_ID, name, importance);
+            channel.setSound(null, null);
+            channel.enableVibration(false);
+            channel.enableLights(false);
             channel.setDescription(description);
 
             // Add the channel
