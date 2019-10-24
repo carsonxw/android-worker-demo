@@ -50,6 +50,10 @@ public class SaveImageToFileWorker extends Worker {
             Data outputData = new Data.Builder()
                     .putString(Constants.KEY_IMAGE_URI, outputUri)
                     .build();
+
+            //make notification on notification bar
+            WorkerUtils.makeStatusNotification("Output is " + outputUri.toString(), applicationContext);
+
             return Result.success(outputData);
         } catch (Exception e) {
             Log.e(TAG, "Unable to save image to Gallery", e);

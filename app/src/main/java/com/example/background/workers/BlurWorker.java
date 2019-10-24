@@ -55,8 +55,7 @@ public class BlurWorker extends Worker {
                     .putString(Constants.KEY_IMAGE_URI, outputUri.toString())
                     .build();
 
-            //make notification on notification bar
-            WorkerUtils.makeStatusNotification("Output is " + outputUri.toString(), applicationContext);
+
 
             //if it is error free, return success
             return Result.success(outputData);
