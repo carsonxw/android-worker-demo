@@ -29,6 +29,11 @@ public class CleanupWorker extends Worker {
     @Override
     public Result doWork() {
         Context applicationContext = getApplicationContext();
+        // Makes a notification when the work starts and slows down the work so that it's easier to
+        // see each WorkRequest start, even on emulated devices
+        WorkerUtils.makeStatusNotification("Cleaning up old temporary files",
+                applicationContext);
+        WorkerUtils.sleep();
 
         try {
             File outputDirectory = new File(applicationContext.getFilesDir(), Constants.OUTPUT_PATH);

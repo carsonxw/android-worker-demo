@@ -37,6 +37,11 @@ public class SaveImageToFileWorker extends Worker {
         Context applicationContext = getApplicationContext();
         ContentResolver resolver = applicationContext.getContentResolver();
 
+        // Makes a notification when the work starts and slows down the work so that it's easier to
+        // see each WorkRequest start, even on emulated devices
+        WorkerUtils.makeStatusNotification("Saving image", applicationContext);
+        WorkerUtils.sleep();
+
         try{
             String resourceUri = getInputData().getString(Constants.KEY_IMAGE_URI);
             Bitmap bitmap = BitmapFactory.decodeStream(resolver.openInputStream(Uri.parse(resourceUri)));

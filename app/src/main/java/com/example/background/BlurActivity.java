@@ -19,10 +19,13 @@ package com.example.background;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.work.Data;
 import androidx.work.WorkInfo;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -66,6 +69,8 @@ public class BlurActivity extends AppCompatActivity implements View.OnClickListe
         // Setup blur image file button
 //        mGoButton.setOnClickListener(view -> mViewModel.applyBlur(getBlurLevel()));
         mGoButton.setOnClickListener(this);
+        mOutputButton.setOnClickListener(this);
+        mCancelButton.setOnClickListener(this);
 
         //Show work status while saving image to gallery
         mViewModel.getSavedWorkInfo().observe(this, listOfWorkInfos -> {
@@ -84,6 +89,15 @@ public class BlurActivity extends AppCompatActivity implements View.OnClickListe
                 showWorkInProgress();
             else
                 showWorkFinished();
+            Data outputData = workInfo.getOutputData();
+
+            String outputImageUri = outputData.getString(Constants.KEY_IMAGE_URI);
+
+            //if there is an output file show "See File" button
+            if (!TextUtils.isEmpty(outputImageUri)) {
+                mViewModel.setOutputUri(outputImageUri);
+                mOutputButton.setVisibility(View.VISIBLE);
+            }
         });
 
 
@@ -132,6 +146,16 @@ public class BlurActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.go_button:
                 mViewModel.applyBlur(getBlurLevel());
+            case R.id.see_file_button:
+                Uri currentUri = mViewModel.getOutputUri();
+                if (currentUri != null ) {
+                    Intent actionView = new Intent(Intent.ACTION_VIEW, currentUri);
+                    if (actionView.resolveActivity(getPackageManager()) != null ) {
+                        startActivity(actionView);
+                    }
+                }
+            case R.id.cancel_button:
+                mViewModel.cancelWork();
             default:
                 break;
         }

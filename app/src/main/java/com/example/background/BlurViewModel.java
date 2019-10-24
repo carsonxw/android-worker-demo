@@ -46,6 +46,8 @@ public class BlurViewModel extends AndroidViewModel {
 
     private WorkManager mWorkManager;
 
+    private Uri mOutputUri;
+
     //new instance variable for the WorkInfo
     private LiveData<List<WorkInfo>> mSavedWorkInfo;
 
@@ -118,6 +120,29 @@ public class BlurViewModel extends AndroidViewModel {
     //Add a getter method for mSavedWorkInfo
     LiveData<List<WorkInfo>> getSavedWorkInfo() {
         return mSavedWorkInfo;
+    }
+
+    /**
+     * Setter method for outputUri
+     */
+    void setOutputUri(String outputImageUri) {
+        mOutputUri = uriOrNull(outputImageUri);
+    }
+
+    /**
+     * Getter method for getOutputUri
+     */
+    Uri getOutputUri() {
+        return mOutputUri;
+    }
+
+    /**
+     * Cancel work using the work's unique name
+     * to cancel all the work instead of just a particular step
+     * by unique chain name
+     */
+    void cancelWork() {
+        mWorkManager.cancelUniqueWork(IMAGE_MANIPULATION_WORK_NAME);
     }
 
     /**
