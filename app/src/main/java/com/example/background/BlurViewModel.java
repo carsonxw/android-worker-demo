@@ -19,6 +19,7 @@ package com.example.background;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -73,6 +74,11 @@ public class BlurViewModel extends AndroidViewModel {
                 OneTimeWorkRequest.from(CleanupWorker.class)
         );
 
+        //Create charging constraint
+        Constraints constraints = new Constraints.Builder()
+                .setRequiresCharging(true)
+                .build();
+
         //Add WorkRequests to blur the image the number of times requested
         for (int i=0 ; i < blurLevel ; i++) {
             OneTimeWorkRequest.Builder blurBuilder = new OneTimeWorkRequest.Builder(BlurWorker.class);
@@ -88,6 +94,7 @@ public class BlurViewModel extends AndroidViewModel {
         }
         //Add WorkRequest to save the image to the filesystem
         OneTimeWorkRequest saveImageRequest = new OneTimeWorkRequest.Builder(SaveImageToFileWorker.class)
+                .setConstraints(constraints)//This adds the constraint which requires the users to charge the devices while saving image
                 .addTag(TAG_OUTPUT) //This adds the tag
                 .build();
         continuation = continuation.then(saveImageRequest);
