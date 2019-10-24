@@ -21,6 +21,8 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.work.WorkInfo;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,7 +32,7 @@ import android.widget.RadioGroup;
 import com.bumptech.glide.Glide;
 
 
-public class BlurActivity extends AppCompatActivity {
+public class BlurActivity extends AppCompatActivity implements View.OnClickListener {
 
     private BlurViewModel mViewModel;
     private ImageView mImageView;
@@ -62,7 +64,29 @@ public class BlurActivity extends AppCompatActivity {
         }
 
         // Setup blur image file button
-        mGoButton.setOnClickListener(view -> mViewModel.applyBlur(getBlurLevel()));
+//        mGoButton.setOnClickListener(view -> mViewModel.applyBlur(getBlurLevel()));
+        mGoButton.setOnClickListener(this);
+
+        //Show work status while saving image to gallery
+        mViewModel.getSavedWorkInfo().observe(this, listOfWorkInfos -> {
+
+            //If there are no matching work info, do nothing
+            if (listOfWorkInfos == null || listOfWorkInfos.isEmpty()) {
+                return;
+            }
+
+            //We only care about the first output status
+            //Every continuation has only worker tagged TAG_OUTPUT
+            WorkInfo workInfo = listOfWorkInfos.get(0);
+
+            boolean finished = workInfo.getState().isFinished();
+            if (!finished)
+                showWorkInProgress();
+            else
+                showWorkFinished();
+        });
+
+
     }
 
     /**
@@ -101,5 +125,15 @@ public class BlurActivity extends AppCompatActivity {
         }
 
         return 1;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.go_button:
+                mViewModel.applyBlur(getBlurLevel());
+            default:
+                break;
+        }
     }
 }
