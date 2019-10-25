@@ -90,16 +90,17 @@
                     android:text="@string/cancel_work"
                     android:visibility="gone"
                     />
-
                 <ProgressBar
                     android:id="@+id/progress_bar"
-                    android:layout_width="wrap_content"
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:indeterminate="true"
                     android:visibility="gone"
+                    style="?android:attr/progressBarStyleHorizontal"
                     android:layout_gravity="center_horizontal"
                     />
+
             </LinearLayout>
+
 
             <Button
                 android:id="@+id/go_button"
@@ -115,6 +116,7 @@
                 android:text="@string/see_file"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
 
         </LinearLayout>
 

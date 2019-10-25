@@ -17,6 +17,7 @@
 package com.example.background;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import androidx.work.Data;
 import androidx.work.WorkInfo;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -34,14 +36,17 @@ import android.widget.RadioGroup;
 
 import com.bumptech.glide.Glide;
 
+import java.util.List;
+
 
 public class BlurActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = "BLUR_ACTIVITY";
 
     private BlurViewModel mViewModel;
     private ImageView mImageView;
     private ProgressBar mProgressBar;
     private Button mGoButton, mOutputButton, mCancelButton;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,27 +85,63 @@ public class BlurActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             }
 
-            //We only care about the first output status
-            //Every continuation has only worker tagged TAG_OUTPUT
-            WorkInfo workInfo = listOfWorkInfos.get(0);
+            if(listOfWorkInfos.size() > 0) {
+                //We only care about the first output status
+                //Every continuation has only worker tagged TAG_OUTPUT
+                WorkInfo workInfo = listOfWorkInfos.get(0);
 
-            boolean finished = workInfo.getState().isFinished();
-            if (!finished)
-                showWorkInProgress();
-            else
-                showWorkFinished();
-            Data outputData = workInfo.getOutputData();
+                boolean finished = workInfo.getState().isFinished();
+                if (!finished) {
+                    showWorkInProgress();
+                }
+                else {
+                    showWorkFinished();
+                }
 
-            String outputImageUri = outputData.getString(Constants.KEY_IMAGE_URI);
+                Data outputData = workInfo.getOutputData();
 
-            //if there is an output file show "See File" button
-            if (!TextUtils.isEmpty(outputImageUri)) {
-                mViewModel.setOutputUri(outputImageUri);
-                mOutputButton.setVisibility(View.VISIBLE);
+                String outputImageUri = outputData.getString(Constants.KEY_IMAGE_URI);
+
+                //if there is an output file show "See File" button
+                if (!TextUtils.isEmpty(outputImageUri)) {
+                    mViewModel.setOutputUri(outputImageUri);
+                    mOutputButton.setVisibility(View.VISIBLE);
+                }
+
             }
+
         });
 
+      //Show work status while blurring image
+      mViewModel.getBlurWorkInfo().observe(this, listOfWorkInfos -> {
+          //If there are no matching work info, do nothing
+          if (listOfWorkInfos == null || listOfWorkInfos.isEmpty()) {
+              return;
+          }
 
+          if(listOfWorkInfos.size() > 0) {
+              //We only care about the first output status
+              //Every continuation has only worker tagged TAG_OUTPUT
+              WorkInfo workInfo = listOfWorkInfos.get(0);
+
+              Log.w(TAG, "blur work info list" + listOfWorkInfos);
+              Log.w(TAG, "blur work info " + workInfo);
+
+              int progress = workInfo.getProgress().getInt("blurProgress", 0);
+
+              Log.w(TAG, "progress " + progress);
+
+              boolean finished = workInfo.getState().isFinished();
+              if (!finished) {
+                  showWorkInProgress();
+                  mProgressBar.setProgress(progress);
+              }
+              else {
+                  showWorkFinished();
+              }
+          }
+
+      });
     }
 
     /**

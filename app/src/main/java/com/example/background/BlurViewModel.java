@@ -37,7 +37,9 @@ import com.example.background.workers.CleanupWorker;
 import com.example.background.workers.SaveImageToFileWorker;
 
 import java.util.List;
+import java.util.ListIterator;
 
+import static com.example.background.Constants.BLUR_OUTPUT;
 import static com.example.background.Constants.IMAGE_MANIPULATION_WORK_NAME;
 import static com.example.background.Constants.KEY_IMAGE_URI;
 import static com.example.background.Constants.TAG_OUTPUT;
@@ -53,10 +55,13 @@ public class BlurViewModel extends AndroidViewModel {
     //new instance variable for the WorkInfo
     private LiveData<List<WorkInfo>> mSavedWorkInfo;
 
+    private LiveData<List<WorkInfo>> mBlurWorkInfo;
+
     public BlurViewModel(@NonNull Application application) {
         super(application);
         mWorkManager = WorkManager.getInstance(application);
         mSavedWorkInfo = mWorkManager.getWorkInfosByTagLiveData(TAG_OUTPUT);
+        mBlurWorkInfo = mWorkManager.getWorkInfosByTagLiveData(BLUR_OUTPUT);
     }
 
     /**
@@ -82,7 +87,8 @@ public class BlurViewModel extends AndroidViewModel {
 
         //Add WorkRequests to blur the image the number of times requested
         for (int i=0 ; i < blurLevel ; i++) {
-            OneTimeWorkRequest.Builder blurBuilder = new OneTimeWorkRequest.Builder(BlurWorker.class);
+            OneTimeWorkRequest.Builder blurBuilder = new OneTimeWorkRequest.Builder(BlurWorker.class)
+                    .addTag(BLUR_OUTPUT);
 
             //Input the Uri if this is the first blur operation
             //After the first blur operation the input will be the output of previous
@@ -128,6 +134,11 @@ public class BlurViewModel extends AndroidViewModel {
     //Add a getter method for mSavedWorkInfo
     LiveData<List<WorkInfo>> getSavedWorkInfo() {
         return mSavedWorkInfo;
+    }
+
+    //Add a getter method for mBlurWorkInfo
+    LiveData<List<WorkInfo>> getBlurWorkInfo() {
+        return mBlurWorkInfo;
     }
 
     /**

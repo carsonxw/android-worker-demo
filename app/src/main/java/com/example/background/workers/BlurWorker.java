@@ -1,5 +1,6 @@
 package com.example.background.workers;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,10 +20,13 @@ import com.example.background.R;
 
 public class BlurWorker extends Worker {
     public BlurWorker(
-                @NonNull Context appContext,
-                @NonNull WorkerParameters workerParams
-            ) {
+            @NonNull Context appContext,
+            @NonNull WorkerParameters workerParams,
+            @NonNull String clientApi
+    ) {
         super(appContext, workerParams);
+
+        setProgressAsync(new Data.Builder().putInt("blurProgress", 30).build());
     }
 
     private static final String TAG = BlurWorker.class.getSimpleName();
@@ -45,6 +49,7 @@ public class BlurWorker extends Worker {
                 throw new IllegalArgumentException("Invalid input uri");
             }
 
+            setProgressAsync(new Data.Builder().putInt("blurProgress", 50).build());
             ContentResolver resolver = applicationContext.getContentResolver();
 
             //create the bitmap with user input uri
@@ -56,11 +61,11 @@ public class BlurWorker extends Worker {
             //Write bitmap to temp file
             Uri outputUri = WorkerUtils.writeBitmapToFile(applicationContext, output);
 
+            setProgressAsync(new Data.Builder().putInt("blurProgress", 100).build());
+
             Data outputData = new Data.Builder()
                     .putString(Constants.KEY_IMAGE_URI, outputUri.toString())
                     .build();
-
-
 
             //if it is error free, return success
             return Result.success(outputData);
@@ -69,4 +74,5 @@ public class BlurWorker extends Worker {
             return Result.failure();
         }
     }
+
 }
