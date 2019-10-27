@@ -43,6 +43,9 @@ public class SaveImageToFileWorker extends Worker {
         WorkerUtils.sleep();
 
         try{
+            String clientApi = getInputData().getString("clientApi");
+            Log.w("clientApi", "clientApi " + clientApi);
+
             String resourceUri = getInputData().getString(Constants.KEY_IMAGE_URI);
             Bitmap bitmap = BitmapFactory.decodeStream(resolver.openInputStream(Uri.parse(resourceUri)));
             String outputUri = MediaStore.Images.Media.insertImage(

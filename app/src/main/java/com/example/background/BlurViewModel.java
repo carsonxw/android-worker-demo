@@ -99,11 +99,16 @@ public class BlurViewModel extends AndroidViewModel {
 
             continuation = continuation.then(blurBuilder.build());
         }
+
+        Data.Builder builder = new Data.Builder();
+        builder.putString("clientApi", "request_fdata");
         //Add WorkRequest to save the image to the filesystem
         OneTimeWorkRequest saveImageRequest = new OneTimeWorkRequest.Builder(SaveImageToFileWorker.class)
                 .setConstraints(constraints)//This adds the constraint which requires the users to charge the devices while saving image
+                .setInputData(builder.build())//This adds the input data to worker class;
                 .addTag(TAG_OUTPUT) //This adds the tag
                 .build();
+
         continuation = continuation.then(saveImageRequest);
 
         //Actually start the work

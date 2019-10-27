@@ -21,8 +21,7 @@ import com.example.background.R;
 public class BlurWorker extends Worker {
     public BlurWorker(
             @NonNull Context appContext,
-            @NonNull WorkerParameters workerParams,
-            @NonNull String clientApi
+            @NonNull WorkerParameters workerParams
     ) {
         super(appContext, workerParams);
 
